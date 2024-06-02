@@ -1,0 +1,99 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           Int            @id @default(autoincrement())
+  username     String         @db.VarChar(64)
+  email        String         @db.VarChar(255)
+  isAnonymous  Boolean        @default(false)
+  avatar       String?        @db.VarChar(512)
+  googleId     String         @unique @db.VarChar(255)
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  UserActivity UserActivity[]
+  Book         Book[]
+
+  @@unique([username, email])
+  @@map("users")
+}
+
+model Activity {
+  id           Int            @id @default(autoincrement())
+  tableName    String         @db.VarChar(64)
+  operation    String         @db.VarChar(64)
+  recordId     Int?
+  UserActivity UserActivity[]
+
+  @@map("activities")
+}
+
+model UserActivity {
+  userId     Int
+  activityId Int
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  User       User     @relation(fields: [userId], references: [id])
+  Activity   Activity @relation(fields: [activityId], references: [id])
+
+  @@id([userId, activityId])
+  @@map("user_activities")
+}
+
+model Book {
+  id          Int       @id @default(autoincrement())
+  authorId    Int
+  title       String    @db.VarChar(255)
+  description String?   @db.VarChar(512)
+  coverPage   String?   @db.VarChar(512)
+  backStory   String?   @db.Text
+  type        String    @db.VarChar(32) // e.g. novel, short story, series, etc.
+  genre       String    @db.VarChar(32) // e.g. fantasy, sci-fi, romance, etc.
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  Author      User      @relation(fields: [authorId], references: [id])
+  Chapter     Chapter[]
+
+  @@unique([authorId, title])
+  @@map("books")
+}
+
+model Chapter {
+  id          Int      @id @default(autoincrement())
+  bookId      Int
+  title       String?  @db.VarChar(255)
+  position    Int
+  description String?  @db.VarChar(512)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  Book        Book     @relation(fields: [bookId], references: [id])
+  Page        Page[]
+
+  @@unique([bookId, position])
+  @@map("chapters")
+}
+
+model Page {
+  id              Int      @id @default(autoincrement())
+  chapterId       Int
+  position        Int
+  content         String   @db.Text
+  words_cnt       Int      @default(0)
+  has_annotations Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  Chapter         Chapter  @relation(fields: [chapterId], references: [id])
+
+  @@map("pages")
+}

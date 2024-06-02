@@ -1,0 +1,17 @@
+{
+    "extends": "fastify-tsconfig",
+    "compilerOptions": {
+        "sourceMap": true,
+        "outDir": "./build",
+        "declaration": false,
+        "baseUrl": "./src",
+        "paths": {
+            "@/*": [
+                "./*"
+            ]
+        }
+    },
+    "exclude": [
+        "./.eslintrc.js"
+    ]
+}
