@@ -11,11 +11,7 @@ export default function (
 	instance.get('/redirect/google', googleOAuth.redirect)
 	instance.post(
 		'/login/google',
-		{
-			schema: {
-				body: googleAuthSchema,
-			},
-		},
+		{ schema: googleAuthSchema },
 		googleOAuth.login,
 	)
 	instance.post(
