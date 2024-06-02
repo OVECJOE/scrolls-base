@@ -1,6 +1,6 @@
-import { FastifyInstance, fastify } from 'fastify'
+import { type FastifyInstance, fastify } from 'fastify'
 import fastifyCors from '@fastify/cors'
-import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
+import { type TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
 import routes from '@/routes'
 
 /**
@@ -10,7 +10,7 @@ class FastifyApp {
 	/**
 	 * The Fastify server instance.
 	 */
-	private server: FastifyInstance
+	private readonly server: FastifyInstance
 
 	/**
 	 * Creates a new FastifyApp instance.

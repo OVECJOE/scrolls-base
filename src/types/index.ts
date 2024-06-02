@@ -6,7 +6,7 @@ export {
 	type UserUpdateSchema,
 } from './schemas.types'
 
-export type ApiResponse<T> = {
+export interface ApiResponse<T> {
 	data?: T
 	message: string
 	status: 'success' | 'error'

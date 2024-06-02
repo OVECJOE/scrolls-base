@@ -1,4 +1,4 @@
-import { Static, Type } from '@sinclair/typebox'
+import { type Static, Type } from '@sinclair/typebox'
 
 export const googleAuthSchema = Type.Object({
 	access_token: Type.String({ minLength: 1 }),

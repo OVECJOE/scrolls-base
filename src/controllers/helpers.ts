@@ -1,5 +1,5 @@
-import { ApiResponse } from '@/types'
-import { AuthError } from '@supabase/supabase-js'
+import { type ApiResponse } from '@/types'
+import { type AuthError } from '@supabase/supabase-js'
 
 export function respond<T>(
 	data: T,
