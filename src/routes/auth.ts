@@ -1,6 +1,6 @@
 import { googleOAuth } from '@/controllers'
 import { googleAuthSchema, userUpdateSchema } from '@/types'
-import { FastifyInstance, FastifyPluginOptions } from 'fastify'
+import { type FastifyInstance, type FastifyPluginOptions } from 'fastify'
 
 export default function (
 	instance: FastifyInstance,

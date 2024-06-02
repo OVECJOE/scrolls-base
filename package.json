@@ -46,7 +46,8 @@
   },
   "lint-staged": {
     "*.ts": [
-      "prettier --config .prettierrc.json 'src/**/*.ts' --write"
+      "prettier --config .prettierrc.json 'src/**/*.ts' --write",
+      "eslint . --ext .ts --fix"
     ]
   }
 }
