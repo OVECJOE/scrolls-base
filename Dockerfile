@@ -12,7 +12,7 @@ COPY package*.json ./
 
 RUN npm install
 
-COPY . .
+ADD . .
 
 RUN npm run prisma:generate
 

@@ -60,6 +60,7 @@ model Book {
   backStory   String?   @db.Text
   type        String    @db.VarChar(32) // e.g. novel, short story, series, etc.
   genre       String    @db.VarChar(32) // e.g. fantasy, sci-fi, romance, etc.
+  public      Boolean   @default(false)
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   Author      User      @relation(fields: [authorId], references: [id])
@@ -80,7 +81,6 @@ model Chapter {
   Book        Book     @relation(fields: [bookId], references: [id])
   Page        Page[]
 
-  @@unique([bookId, position])
   @@map("chapters")
 }
 

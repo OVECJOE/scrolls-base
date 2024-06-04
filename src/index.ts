@@ -2,6 +2,8 @@ import { type FastifyInstance, fastify } from 'fastify'
 import fastifyCors from '@fastify/cors'
 import { type TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
 import routes from '@/routes'
+import fastifyJwt from '@fastify/jwt'
+import { type User } from './types'
 
 /**
  * Creates a Fastify server instance and connects to Supabase.
@@ -27,6 +29,9 @@ class FastifyApp {
 
 		// Register plugins
 		this.server.register(fastifyCors)
+		this.server.register(fastifyJwt, {
+			secret: process.env.JWT_SECRET!,
+		})
 
 		// Register routes
 		routes(this.server)
@@ -53,6 +58,22 @@ class FastifyApp {
 	async close(code: number = 0) {
 		await this.server.close()
 		process.exit(code)
+	}
+}
+
+declare module 'fastify' {
+	interface FastifyInstance {
+		checkAuth: (
+			request: FastifyRequest,
+			reply: FastifyReply,
+			done: () => void,
+		) => Promise<void>
+	}
+
+	interface FastifyRequest {
+		session: {
+			user?: User
+		}
 	}
 }
 
