@@ -1,9 +1,7 @@
 node_modules
 .vscode
-.husky
 .eslintignore
 .eslintrc.js
 .prettierrc.json
 .git*
-docker-compose.yml
 Dockerfile

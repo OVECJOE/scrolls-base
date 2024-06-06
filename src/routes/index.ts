@@ -1,7 +1,8 @@
 import { type FastifyInstance } from 'fastify'
+import { checkAuth } from '@/decorators'
 import auth from './auth'
 import books from './books'
-import { checkAuth } from '@/decorators'
+import pages from './pages'
 
 /**
  * Registers routes.
@@ -16,6 +17,8 @@ async function routes(app: FastifyInstance) {
 	await app.register(auth, { prefix: '/auth' })
 	// Books routes
 	await app.register(books, { prefix: '/books' })
+	// Pages routes
+	await app.register(pages, { prefix: '/pages' })
 }
 
 export default routes

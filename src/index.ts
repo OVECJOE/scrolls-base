@@ -1,8 +1,8 @@
-import { type FastifyInstance, fastify } from 'fastify'
+import 'module-alias/register'
+import { type FastifyInstance, fastify, FastifyReply } from 'fastify'
 import fastifyCors from '@fastify/cors'
 import { type TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
 import routes from '@/routes'
-import fastifyJwt from '@fastify/jwt'
 import { type User } from './types'
 
 /**
@@ -29,9 +29,6 @@ class FastifyApp {
 
 		// Register plugins
 		this.server.register(fastifyCors)
-		this.server.register(fastifyJwt, {
-			secret: process.env.JWT_SECRET!,
-		})
 
 		// Register routes
 		routes(this.server)

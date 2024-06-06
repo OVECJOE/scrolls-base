@@ -38,6 +38,11 @@ export const chapterSchema = Type.Object({
 	description: Optional(Type.String()),
 })
 
+export const pageSchema = Type.Object({
+	content: Type.String({ minLength: 1, maxLength: 3000 }),
+	has_annotations: Type.Optional(Type.Boolean()),
+})
+
 export const positionSchema = Type.Object({
 	position: Type.Number(),
 })
@@ -48,6 +53,15 @@ export const chaptersPositionSchema = Type.Array(
 		position: Type.Number(),
 	}),
 )
+
+export const pageIdSchema = Type.Object({
+	id: Type.String({ minLength: 1 }),
+	pageId: Type.String({ minLength: 1 }),
+})
+
+export const pagePositionSchema = Type.Object({
+	position: Type.Number(),
+})
 
 export const idSchema = Type.Object({
 	id: Type.String({ minLength: 1 }),
@@ -62,3 +76,6 @@ export type ChapterIdSchema = Static<typeof chapterIdSchema>
 export type ChapterSchema = Static<typeof chapterSchema>
 export type PositionSchema = Static<typeof positionSchema>
 export type ChaptersPositionSchema = Static<typeof chaptersPositionSchema>
+export type PageSchema = Static<typeof pageSchema>
+export type PageIdSchema = Static<typeof pageIdSchema>
+export type PagePositionSchema = Static<typeof pagePositionSchema>

@@ -18,3 +18,14 @@ export {
 	moveChapter,
 	reorderChapters,
 } from './chapters'
+
+export {
+	createPage,
+	updatePage,
+	deleteAllPages,
+	deleteOtherPages,
+	deletePage,
+	getPages,
+	getPage,
+	updatePagePosition,
+} from './pages'

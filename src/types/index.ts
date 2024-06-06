@@ -20,6 +20,12 @@ export {
 	type PositionSchema,
 	chaptersPositionSchema,
 	type ChaptersPositionSchema,
+	pageSchema,
+	type PageSchema,
+	pageIdSchema,
+	type PageIdSchema,
+	pagePositionSchema,
+	type PagePositionSchema,
 } from './schemas.types'
 
 export interface ApiResponse<T> {

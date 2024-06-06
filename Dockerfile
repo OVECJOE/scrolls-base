@@ -1,19 +1,24 @@
 FROM node:20.14.0-alpine
 
-RUN apk update && apk add --no-cache curl
-RUN apk add nano vim
+WORKDIR /app
 
-WORKDIR /home/scrolls/base
-
-ENV NODE_ENV=development
-
-COPY prisma ./prisma/
-COPY package*.json ./
+COPY package*.json .
 
 RUN npm install
+RUN npm install -g pm2
 
-ADD . .
+COPY . .
 
 RUN npm run prisma:generate
+RUN npm run build
 
-CMD [ "npm", "run", "dev" ]
+COPY .env .
+COPY start.sh .
+
+RUN chmod +x start.sh
+
+ENV NODE_ENV=production
+
+EXPOSE 4000
+
+CMD ["./start.sh"]
