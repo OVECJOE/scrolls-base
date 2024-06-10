@@ -1,78 +1,122 @@
-import { type ChapterSchema } from '@/types'
+import supabase from '@/supabase'
+import { Chapter, ChapterFilters, ServiceAuthorizer } from '@/types'
 import { PrismaClient } from '@prisma/client'
 
-class ChaptersService {
+class ChaptersService implements ServiceAuthorizer {
+	private readonly queryBuilder: ReturnType<typeof supabase.from>
 	private readonly prisma: PrismaClient
 
 	constructor() {
+		this.queryBuilder = supabase.from('chapters')
 		this.prisma = new PrismaClient()
 	}
 
-	async get(bookId: number) {
-		return await this.prisma.chapter.findMany({
-			where: { bookId },
-			select: {
-				id: true,
-				title: true,
-				position: true,
-			},
-			orderBy: { position: 'asc' },
-		})
+	private select() {
+		return this.queryBuilder
+			.select(
+				`
+			id,
+			title,
+			position,
+			description,
+			book:bookId!inner (
+				title,
+				public,
+				type,
+				genre,
+			),
+			pages_cnt:Page!inner(count)
+		`,
+			)
+			.eq('pages.chapterId', 'id')
 	}
 
-	async getOne(bookId: number, chapterId: number) {
-		return await this.prisma.chapter.findUnique({
-			where: { id: chapterId, bookId },
-			select: {
-				Book: {
-					select: {
-						title: true,
-						public: true,
-						type: true,
-						genre: true,
-					},
-				},
-				Page: {
-					select: {
-						words_cnt: true,
-					},
-					orderBy: {
-						position: 'asc',
-					},
-				},
-			},
+	private async one(id: number) {
+		return (await this.select().eq('id', id).single<Chapter>()).data
+	}
+
+	private filter(
+		query: ReturnType<typeof this.select>,
+		filters: Omit<ChapterFilters, 'id'>,
+	) {
+		for (const [key, value] of Object.entries(filters)) {
+			query = query.eq(key, value)
+		}
+
+		return query
+	}
+
+	async verify(authorId: number, chapterId: number) {
+		const chapter = await this.one(chapterId)
+		if (!chapter) {
+			return false
+		}
+
+		// find the book with the title
+		const book = await this.prisma.book.findFirst({
+			where: { title: chapter.book.title },
 		})
+
+		return book?.public || book?.authorId === authorId
+	}
+
+	async get(filters?: ChapterFilters, single = false) {
+		let query = this.select()
+		if (filters) {
+			query = this.filter(query, filters)
+		}
+
+		if (single) {
+			return (await query.single<Chapter>()).data
+		}
+
+		return (
+			await query
+				.order('position', { ascending: true })
+				.returns<Chapter[]>()
+		).data
 	}
 
 	async create(bookId: number, title?: string, description?: string) {
-		const chapters = await this.get(bookId)
-		return await this.prisma.chapter.create({
-			data: {
+		const chapters = (await this.get({ bookId })) as Chapter[]
+
+		return await this.queryBuilder
+			.insert({
 				title,
 				description,
 				position: chapters.length + 1,
 				bookId,
-			},
-		})
+			} as never)
+			.single<Chapter>()
 	}
 
-	async update(bookId: number, chapterId: number, data: ChapterSchema) {
-		return await this.prisma.chapter.update({
-			where: { id: chapterId, bookId },
-			data,
-		})
+	async update(
+		bookId: number,
+		chapterId: number,
+		data: Pick<ChapterFilters, 'title'> & { description?: string },
+	) {
+		const { data: chapter } = await this.queryBuilder
+			.update(data as never)
+			.eq('id', chapterId)
+			.eq('bookId', bookId)
+			.single<Chapter>()
+
+		return chapter
 	}
 
 	async delete(bookId: number, chapterId: number) {
-		const { position } = await this.prisma.chapter.delete({
-			where: { id: chapterId, bookId },
-		})
+		const { data } = await this.queryBuilder
+			.delete()
+			.eq('id', chapterId)
+			.eq('bookId', bookId)
+			.single<Chapter>()
 
-		// Update the positions of the remaining chapters
-		return await this.prisma.chapter.updateMany({
-			where: { bookId, position: { gt: position } },
+		await this.prisma.chapter.updateMany({
+			where: { bookId, position: { gt: data?.position } },
 			data: { position: { decrement: 1 } },
 		})
+
+		return data
 	}
 
 	async move(bookId: number, chapterId: number, position: number) {

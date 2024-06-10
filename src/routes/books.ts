@@ -1,17 +1,8 @@
-import {
-	createBook,
-	deleteBook,
-	getBook,
-	getPublicBook,
-	getPublicBooks,
-	getUserBooks,
-	showOrHideBook,
-	updateBook,
-} from '@/controllers/books'
+import { author, details, publc } from '@/controllers'
 import { bookSchema, idSchema } from '@/types'
 import { bookUpdateSchema } from '@/types/schemas.types'
+import { Type } from '@sinclair/typebox'
 import { type FastifyInstance, type FastifyPluginOptions } from 'fastify'
-import chapters from './chapters'
 
 export default function (
 	instance: FastifyInstance,
@@ -19,22 +10,26 @@ export default function (
 	done: () => void,
 ) {
 	// Unauthenticated routes
-	instance.get('/public', getPublicBooks)
-	instance.get('/public/:id', { schema: { params: idSchema } }, getPublicBook)
+	instance.get('/public', publc.list)
+	instance.get('/public/:id', { schema: { params: idSchema } }, publc.view)
 
 	// Authenticated routes
 	const authOpts = {
 		preHandler: [instance.checkAuth],
 	}
 
-	instance.get('/', authOpts, getUserBooks)
+	instance.get('/summary', authOpts, author.summary)
+	instance.get('/genres', authOpts, details.genres)
+	instance.get('/types', authOpts, details.types)
+
+	instance.get('/', authOpts, author.list)
 	instance.get(
 		'/:id',
 		{
 			...authOpts,
 			schema: { params: idSchema },
 		},
-		getBook,
+		author.view,
 	)
 	instance.post(
 		'/',
@@ -42,7 +37,7 @@ export default function (
 			...authOpts,
 			schema: { body: bookSchema },
 		},
-		createBook,
+		author.create,
 	)
 	instance.put(
 		'/:id',
@@ -50,15 +45,7 @@ export default function (
 			...authOpts,
 			schema: { params: idSchema, body: bookUpdateSchema },
 		},
-		updateBook,
-	)
-	instance.put(
-		'/:id/publicize',
-		{
-			...authOpts,
-			schema: { params: idSchema },
-		},
-		showOrHideBook,
+		author.update,
 	)
 	instance.delete(
 		'/:id',
@@ -66,11 +53,26 @@ export default function (
 			...authOpts,
 			schema: { params: idSchema },
 		},
-		deleteBook,
+		author.delete,
 	)
 
-	// Nested routes
-	instance.register(chapters, { prefix: '/:id/chapters' })
+	instance.put(
+		'/:id/publicity',
+		{
+			...authOpts,
+			schema: { params: idSchema },
+		},
+		author.togglePublicity,
+	)
+
+	instance.put(
+		'/:id/transfer',
+		{
+			...authOpts,
+			schema: { params: idSchema, body: { authorId: Type.Number() } },
+		},
+		author.transfer,
+	)
 
 	done()
 }

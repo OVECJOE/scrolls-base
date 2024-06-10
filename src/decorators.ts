@@ -27,4 +27,11 @@ export async function checkAuth(request: FastifyRequest, reply: FastifyReply) {
 		// Step 4: Add the user to the request object
 		request.session = { user: user.data }
 	}
+
+	if (!request.session || !request.session.user) {
+		throw new AuthError(
+			'The current session has expired. Please login.',
+			401,
+		)
+	}
 }

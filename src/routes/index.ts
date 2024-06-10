@@ -3,6 +3,7 @@ import { checkAuth } from '@/decorators'
 import auth from './auth'
 import books from './books'
 import pages from './pages'
+import chapters from './chapters'
 
 /**
  * Registers routes.
@@ -13,11 +14,11 @@ import pages from './pages'
 async function routes(app: FastifyInstance) {
 	// authenticate the user for protected routes
 	app.decorate('checkAuth', checkAuth)
-	// Auth routes
+
+	// Routes
 	await app.register(auth, { prefix: '/auth' })
-	// Books routes
 	await app.register(books, { prefix: '/books' })
-	// Pages routes
+	await app.register(chapters, { prefix: '/chapters' })
 	await app.register(pages, { prefix: '/pages' })
 }
 

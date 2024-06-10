@@ -6,7 +6,7 @@ export type Json =
 	| { [key: string]: Json | undefined }
 	| Json[]
 
-export interface Database {
+export type Database = {
 	public: {
 		Tables: {
 			_prisma_migrations: {
@@ -72,6 +72,7 @@ export interface Database {
 					description: string | null
 					genre: string
 					id: number
+					public: boolean
 					title: string
 					type: string
 					updatedAt: string
@@ -84,6 +85,7 @@ export interface Database {
 					description?: string | null
 					genre: string
 					id?: number
+					public?: boolean
 					title: string
 					type: string
 					updatedAt: string
@@ -96,6 +98,7 @@ export interface Database {
 					description?: string | null
 					genre?: string
 					id?: number
+					public?: boolean
 					title?: string
 					type?: string
 					updatedAt?: string
@@ -227,26 +230,32 @@ export interface Database {
 			}
 			users: {
 				Row: {
+					avatar: string | null
 					createdAt: string
 					email: string
 					googleId: string
 					id: number
+					isAnonymous: boolean
 					updatedAt: string
 					username: string
 				}
 				Insert: {
+					avatar?: string | null
 					createdAt?: string
 					email: string
 					googleId: string
 					id?: number
+					isAnonymous?: boolean
 					updatedAt: string
 					username: string
 				}
 				Update: {
+					avatar?: string | null
 					createdAt?: string
 					email?: string
 					googleId?: string
 					id?: number
+					isAnonymous?: boolean
 					updatedAt?: string
 					username?: string
 				}

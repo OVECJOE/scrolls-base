@@ -28,11 +28,6 @@ export const bookUpdateSchema = Type.Object({
 	backStory: Optional(Type.String()),
 })
 
-export const chapterIdSchema = Type.Object({
-	id: Type.String({ minLength: 1 }),
-	chapterId: Type.String({ minLength: 1 }),
-})
-
 export const chapterSchema = Type.Object({
 	title: Optional(Type.String({ minLength: 1 })),
 	description: Optional(Type.String()),
@@ -47,21 +42,12 @@ export const positionSchema = Type.Object({
 	position: Type.Number(),
 })
 
-export const chaptersPositionSchema = Type.Array(
+export const positionsSchema = Type.Array(
 	Type.Object({
 		id: Type.Number(),
 		position: Type.Number(),
 	}),
 )
-
-export const pageIdSchema = Type.Object({
-	id: Type.String({ minLength: 1 }),
-	pageId: Type.String({ minLength: 1 }),
-})
-
-export const pagePositionSchema = Type.Object({
-	position: Type.Number(),
-})
 
 export const idSchema = Type.Object({
 	id: Type.String({ minLength: 1 }),
@@ -72,10 +58,7 @@ export type UserUpdateSchema = Static<typeof userUpdateSchema>
 export type BookSchema = Static<typeof bookSchema>
 export type IdSchema = Static<typeof idSchema>
 export type BookUpdateSchema = Static<typeof bookUpdateSchema>
-export type ChapterIdSchema = Static<typeof chapterIdSchema>
 export type ChapterSchema = Static<typeof chapterSchema>
 export type PositionSchema = Static<typeof positionSchema>
-export type ChaptersPositionSchema = Static<typeof chaptersPositionSchema>
+export type PositionsSchema = Static<typeof positionsSchema>
 export type PageSchema = Static<typeof pageSchema>
-export type PageIdSchema = Static<typeof pageIdSchema>
-export type PagePositionSchema = Static<typeof pagePositionSchema>

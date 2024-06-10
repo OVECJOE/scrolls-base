@@ -1,18 +1,7 @@
-import {
-	createChapter,
-	deleteChapter,
-	getChapter,
-	getChapters,
-	moveChapter,
-	reorderChapters,
-	updateChapter,
-} from '@/controllers/books'
+import { main, operations } from '@/controllers'
+import { genAuthOpts } from '@/helpers'
 import { chapterSchema, idSchema } from '@/types'
-import {
-	chapterIdSchema,
-	chaptersPositionSchema,
-	positionSchema,
-} from '@/types/schemas.types'
+import { positionsSchema, positionSchema } from '@/types/schemas.types'
 import { type FastifyInstance, type FastifyPluginOptions } from 'fastify'
 
 export default function (
@@ -20,39 +9,22 @@ export default function (
 	options: FastifyPluginOptions,
 	done: () => void,
 ) {
-	// Authenticated routes
-	const authOpts = {
-		preHandler: [instance.checkAuth],
-	}
+	// Unauthenticated routes
+	instance.get('/', main.list)
+	instance.get('/:id', { schema: { params: idSchema } }, main.view)
 
-	instance.get('/', authOpts, getChapters)
-	instance.get('/:chapterId', authOpts, getChapter)
-	instance.post(
-		'',
-		{ ...authOpts, schema: { body: chapterSchema } },
-		createChapter,
-	)
-	instance.put(
-		'/:chapterId',
-		{ ...authOpts, schema: { body: chapterSchema } },
-		updateChapter,
-	)
-	instance.delete('/:chapterId', authOpts, deleteChapter)
-	instance.put(
-		'/:chapterId/move',
-		{
-			...authOpts,
-			schema: { body: positionSchema, params: chapterIdSchema },
-		},
-		moveChapter,
-	)
+	// Authenticated routes
+	const authOpts = genAuthOpts(instance)
+
+	instance.post('/', authOpts(false, chapterSchema), main.create)
+	instance.put('/:id', authOpts(true, chapterSchema), main.update)
+	instance.delete('/:id', authOpts(true), main.delete)
+
+	instance.put('/:id/move', authOpts(true, positionSchema), operations.move)
 	instance.put(
 		'/reorder',
-		{
-			...authOpts,
-			schema: { body: chaptersPositionSchema, params: idSchema },
-		},
-		reorderChapters,
+		authOpts(false, positionsSchema),
+		operations.rearrange,
 	)
 
 	done()

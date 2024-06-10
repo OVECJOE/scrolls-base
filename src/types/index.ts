@@ -12,21 +12,25 @@ export {
 	bookUpdateSchema,
 	type BookUpdateSchema,
 	type IdSchema,
-	chapterIdSchema,
-	type ChapterIdSchema,
 	chapterSchema,
 	type ChapterSchema,
 	positionSchema,
 	type PositionSchema,
-	chaptersPositionSchema,
-	type ChaptersPositionSchema,
+	positionsSchema,
+	type PositionsSchema,
 	pageSchema,
 	type PageSchema,
-	pageIdSchema,
-	type PageIdSchema,
-	pagePositionSchema,
-	type PagePositionSchema,
 } from './schemas.types'
+export {
+	type BookMoreInfo,
+	type Book,
+	type BookFilters,
+	type Chapter,
+	type ChapterFilters,
+	type PageFilters,
+	type Page,
+	type ServiceAuthorizer,
+} from './services.types'
 
 export interface ApiResponse<T> {
 	data?: T
@@ -35,3 +39,12 @@ export interface ApiResponse<T> {
 }
 
 export type User = Database['public']['Tables']['users']['Row']
+
+export type AuthOpts = {
+	preHandler: any[]
+	schema: {
+		query?: any
+		body?: any
+		params?: any
+	}
+}

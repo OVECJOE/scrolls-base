@@ -1,4 +1,4 @@
-import { googleOAuth } from '@/controllers'
+import { local, oauth } from '@/controllers'
 import { googleAuthSchema, userUpdateSchema } from '@/types'
 import { type FastifyInstance, type FastifyPluginOptions } from 'fastify'
 
@@ -8,7 +8,7 @@ export default function (
 	done: () => void,
 ) {
 	// Unauthenticated routes
-	instance.get('/redirect/google', googleOAuth.redirect)
+	instance.get('/redirect/google', oauth.redirect)
 	instance.post(
 		'/login/google',
 		{
@@ -16,19 +16,22 @@ export default function (
 				body: googleAuthSchema,
 			},
 		},
-		googleOAuth.login,
+		oauth.validate,
 	)
 	instance.post(
 		'/register/google',
 		{ schema: googleAuthSchema },
-		googleOAuth.register,
+		oauth.create,
 	)
 
 	// Authenticated routes
-	instance.post('/logout', googleOAuth.logout)
-	instance.get('/me', googleOAuth.me)
-	instance.put('/me', { schema: userUpdateSchema }, googleOAuth.updateMe)
-	instance.delete('/me', googleOAuth.deleteMe)
+	instance.post('/logout', oauth.invalidate)
+
+	instance.get('/', local.view)
+	instance.put('/', { schema: userUpdateSchema }, local.update)
+	instance.delete('/', local.delete)
+
+	instance.get('/users', local.list)
 
 	done()
 }

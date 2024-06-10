@@ -1,5 +1,5 @@
+import { APIResponseError } from '@/helpers'
 import { type ApiResponse } from '@/types'
-import { type AuthError } from '@supabase/supabase-js'
 
 export function respond<T>(
 	data: T,
@@ -9,6 +9,8 @@ export function respond<T>(
 	return { data, message, status }
 }
 
-export function respondErrorly(e: AuthError): ApiResponse<null> {
+export function respondErrorly<T extends APIResponseError>(
+	e: T,
+): ApiResponse<null> {
 	return respond(null, e.message, 'error')
 }

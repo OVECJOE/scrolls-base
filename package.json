@@ -41,7 +41,8 @@
     "fastify": "^4.27.0",
     "module-alias": "^2.2.3",
     "prisma": "^5.14.0",
-    "supabase": "^1.172.2"
+    "supabase": "^1.172.2",
+    "type-fest": "^4.20.0"
   },
   "lint-staged": {
     "*.ts": [
